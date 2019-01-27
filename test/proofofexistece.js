@@ -35,18 +35,18 @@ contract('ProofOfExistence', function(accounts) {
         }
         assert(false, 'Expected Error: "VM Exception while processing transaction: revert" not received');
     })
-    it("only owner (fail proof)", async() => {
-        const proofOfExistence = await ProofOfExistence.deployed()
-        const fileHash = "fileTest3"
-	try {
-	   const tx2 = await proofOfExistence.registerFile(fileHash, {from: accounts[1]})
-           console.log(tx2)
-        } catch (error) {
-             console.log("Entra aqui")
-            return;
-        }
-        assert(false, 'Expected Error: "VM Exception while processing transaction: revert" not received');
-    })
+    //it("only owner (fail proof)", async() => {
+       // const proofOfExistence = await ProofOfExistence.deployed()
+       // const fileHash = "fileTest3"
+	//try {
+	  // const tx2 = await proofOfExistence.registerFile(fileHash, {from: accounts[1]})
+           //console.log(tx2)
+       // } catch (error) {
+             //console.log("Entra aqui")
+            //return;
+        //}
+        //assert(false, 'Expected Error: "VM Exception while processing transaction: revert" not received');
+    //})
     it("files by user/owner (happy path)", async() => {
         const proofOfExistence = await ProofOfExistence.deployed()
 
