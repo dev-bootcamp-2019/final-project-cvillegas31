@@ -14,9 +14,9 @@ Backend: Ethereum Blockchain.
 
 2. Prerequisites
 
-Operating system: any version of Ubuntu 16.04.
-Software: npm v6.4.1 and node v11.2.0
-Metamask
+- Operating system: any version of Ubuntu 16.04.
+- Software: npm v6.4.1 and node v11.2.0
+- Metamask
 
 3. Install Truffle and Ganache-CLI
 
