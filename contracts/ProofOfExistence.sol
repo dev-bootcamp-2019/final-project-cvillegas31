@@ -5,6 +5,9 @@ import "../installed_contracts/zeppelin/contracts/math/SafeMath.sol";
 
 contract ProofOfExistence {
 
+  //Emergency Stop pattern
+  bool isStopped = false;
+
   using SafeMath for uint;
 
   // Structs
@@ -18,16 +21,12 @@ contract ProofOfExistence {
   uint public currentFileIndex;
 
   // mapping of file index to file
-  // FILE INDEX || FILE
   mapping (uint => File) public fileMap;
 
   // mapping of user addresses to an array of files
-  // ADDRESS USER || Array of file indices
   mapping (address => uint[]) public userMap;
 
   // mapping of file hash to its file index
-  // not public because public accessor of dynamically sized mapping is not yet built
-  // STRING FILEHASH || UINT FILE INDEX
   mapping (string => uint) fileHashMap;
 
   // Events
@@ -40,19 +39,42 @@ contract ProofOfExistence {
         _;
   }
 
+  // The same file cannot be registered twice
+  modifier uniqueFile(string _fileHash) {
+        require(fileHashMap[_fileHash] == 0);
+        _;
+  }
+
+  modifier stoppedInEmergency {
+      require(!isStopped);
+      _;
+  }
+
+  modifier onlyWhenStopped {
+      require(isStopped);
+      _;
+  }
+
   constructor() public {
     currentFileIndex = 1;
     owner = msg.sender;
   }
 
-  /** @dev Registers an IPFS file hash to contract.
-    * @param _fileHash the IPFS file hash to register.
+
+  function stopContract() public onlyOwner {
+        isStopped = true;
+  }
+
+  function resumeContract() public onlyOwner {
+        isStopped = false;
+  }
+
+
+  /** @dev Registers a file hash to contract.
+    * @param _fileHash the file hash to register.
     * @return boolean if successful transaction.
     */
-  function registerFile(string _fileHash) public payable returns (bool success) {
-    // The same file cannot be registered twice
-    require(fileHashMap[_fileHash] == 0);
-
+  function registerFile(string _fileHash) public payable onlyOwner stoppedInEmergency uniqueFile(_fileHash)  returns (bool success) {
     fileMap[currentFileIndex] = File(msg.sender, _fileHash, now);
     userMap[msg.sender].push(currentFileIndex);
     fileHashMap[_fileHash] = currentFileIndex;
@@ -65,7 +87,7 @@ contract ProofOfExistence {
   /** @dev Returns all file info given file index in fileMap.
     * @param _index - index of registered file in fileMap.
     * @return creator The address of file creator.
-    * @return fileHash The file IPFS hash.
+    * @return fileHash The file hash.
     * @return timestamp The timestamp of file registry saved in blockchain.
     */
   function getFile(uint _index) public view returns (
@@ -77,16 +99,29 @@ contract ProofOfExistence {
     File memory f = fileMap[_index];
     return (f.creator, f.fileHash, f.timestamp);
   }
-  /** @dev Shortcut function to check if a fileHash exists in registry.
-    * @param _fileHash the IPFS file hash to register.
+
+  /** @dev check if a fileHash exists .
+    * @param _fileHash the file hash to register.
     * @return boolean if file exists.
     */
   function checkFileExists(string _fileHash) public view returns (bool fileExists) {
     fileExists = fileHashMap[_fileHash] > 0;
   }
 
+  /** @dev Returns all Indexes given user.
+    * @param _user - indexes of registered file in userMap.
+    * @return uint[] Indexes.
+    */
   function getUserMap(address _user) public view returns ( uint[] index) {
      return userMap[_user];
+  }
+
+  /** @dev Shortcut function to read a file's index by its hash.
+    * @param _fileHash the file hash to register.
+    * @return uint index.
+    */
+  function getFileIndexByFileHash(string _fileHash) public view returns (uint index) {
+    return fileHashMap[_fileHash];
   }
 
 }
