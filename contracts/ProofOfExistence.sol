@@ -1,6 +1,6 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.5.0;
 
-import "../installed_contracts/zeppelin/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 contract ProofOfExistence {
@@ -13,7 +13,7 @@ contract ProofOfExistence {
   // Structs
   struct File {
     address   creator;
-    string    fileHash;
+    string    fileHash ;
     uint      timestamp;
   }
 
@@ -40,7 +40,7 @@ contract ProofOfExistence {
   }
 
   // The same file cannot be registered twice
-  modifier uniqueFile(string _fileHash) {
+  modifier uniqueFile(string memory _fileHash) {
         require(fileHashMap[_fileHash] == 0);
         _;
   }
@@ -74,7 +74,7 @@ contract ProofOfExistence {
     * @param _fileHash the file hash to register.
     * @return boolean if successful transaction.
     */
-  function registerFile(string _fileHash) public payable onlyOwner stoppedInEmergency uniqueFile(_fileHash)  returns (bool success) {
+  function registerFile(string memory _fileHash) public payable onlyOwner stoppedInEmergency uniqueFile(_fileHash)  returns (bool success) {
     fileMap[currentFileIndex] = File(msg.sender, _fileHash, now);
     userMap[msg.sender].push(currentFileIndex);
     fileHashMap[_fileHash] = currentFileIndex;
@@ -92,7 +92,7 @@ contract ProofOfExistence {
     */
   function getFile(uint _index) public view returns (
     address   creator,
-    string    fileHash,
+    string    memory fileHash,
     uint      timestamp
   ) {
     require(_index > 0);
@@ -104,7 +104,7 @@ contract ProofOfExistence {
     * @param _fileHash the file hash to register.
     * @return boolean if file exists.
     */
-  function checkFileExists(string _fileHash) public view returns (bool fileExists) {
+  function checkFileExists(string memory _fileHash) public view returns (bool fileExists) {
     fileExists = fileHashMap[_fileHash] > 0;
   }
 
@@ -112,7 +112,7 @@ contract ProofOfExistence {
     * @param _user - indexes of registered file in userMap.
     * @return uint[] Indexes.
     */
-  function getUserMap(address _user) public view returns ( uint[] index) {
+  function getUserMap(address _user) public view returns ( uint[] memory index) {
      return userMap[_user];
   }
 
@@ -120,7 +120,7 @@ contract ProofOfExistence {
     * @param _fileHash the file hash to register.
     * @return uint index.
     */
-  function getFileIndexByFileHash(string _fileHash) public view returns (uint index) {
+  function getFileIndexByFileHash(string memory _fileHash) public view returns (uint index) {
     return fileHashMap[_fileHash];
   }
 

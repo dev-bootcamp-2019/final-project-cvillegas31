@@ -33,14 +33,15 @@ Ganache CLI automatically creates 10 accounts associated with 10 private keys. E
 You need to copy private key in ganache-cli, then open metamask -> click on account -> click on "Import Account" -> put private key into field -> click Import -> switch account (if needed). Imported account should have 100Eth. Do not forget to select network "Localhost 8545"
 
 
-4. Change to the project directory
+4. Change to the project directory 
 
-Importante: keep the name proof-of-ex as the root of the project.
 
 cd proof-of-ex/
 
 
 5. Run the following commands:
+
+$ npm install openzeppelin-solidity
 
 $ npm install
 
